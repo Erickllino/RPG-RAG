@@ -1,0 +1,4 @@
+[
+    {"id": 1, "name": "Campanha A", "players": [{"Nome": "John1", "Classe": "Bardo", "Raça": "Goblin"}, {"Nome": "Rafael", "Classe": "Paladino", "Raça": "Humano"}]},
+    {"id": 2, "name": "Campanha B", "players": [{"Nome": "John", "Classe": "Bardo", "Raça": "Goblin"}, {"Nome": "Rafael", "Classe": "Paladino", "Raça": "Humano"}]}
+]
