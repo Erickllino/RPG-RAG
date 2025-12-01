@@ -1,0 +1,23 @@
+Empório do Solstício
+
+Descrição: Uma loja majestosa adornada com tecidos dourados e escarlates. As paredes são decoradas com hieróglifos mágicos que brilham sutilmente ao toque de alguém habilidoso em magia.
+
+Itens à venda: Artefatos mágicos raros, joias encantadas.
+
+Itens:
+
+Colar da Aurora Eterna - 200gp
+Item Maravilhoso (Colar), Raro (requer sintonização)
+Este colar concede resistência a efeitos mágicos de ilusão. Além disso, uma vez por dia, o usuário pode emitir uma luz suave que fornece visão no escuro por 1 hora.
+
+Túnica da Sombra Desvanecida - 1000gp
+Item Maravilhoso (Vestimenta), Incomum
+Esta túnica concede vantagem em testes de Furtividade ao ar livre e permite ao usuário se tornar invisível por 1hora uma vez por dia.
+
+Anel do Oráculo Sussurrante - 500gp
+Item Maravilhoso (Anel), Raro (requer sintonização)
+Este anel permite que o usuário faça uma pergunta por dia, recebendo uma resposta sussurrada em sua mente. No entanto, as respostas são enigmáticas e sujeitas a interpretação.
+
+Frasco do Vento Revigorante 100gp
+Item Maravilhoso (Frasco), Incomum
+O conteúdo deste frasco restaura 1d4 de pontos de vida quando consumido. Pode ser usado uma vez por dia.

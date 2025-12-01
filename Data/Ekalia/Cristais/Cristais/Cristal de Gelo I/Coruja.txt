@@ -1,0 +1,11 @@
+Frostaluna (40HP 13AC)
+
+
+Afixos: Misericordioso, Enrage
+
+STR (+1)
+DEX (+4)
+CON (+2)
+INT (+4)
+WIS ( 0)
+CHA (-2)

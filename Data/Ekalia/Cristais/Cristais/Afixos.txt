@@ -1,0 +1,57 @@
+Afixos
+
+	Misericordioso
+Esse inimigo ignora jogadores caidos
+
+	Implacável
+Esse inimigo ataca jogadores caidos
+
+	Mortal
+Esse inimigo prioriza jogadores caidos e irá 
+sacrificar receber dano significativo para poder 
+finalizar um jogador 
+
+	Enrage
+Esse inimigo tem multiplas fases
+
+	Estrategista
+Esse inimigo tentará optimizar o dano de 
+suas habilidades por meio de combos
+
+	Soulbind
+Esse encontro terá 2 inimigos que terão
+suas vidas compartilhads
+
+	Sem Oportuniades
+Ataques de oportunidades estão desativados
+para esse encontro
+
+	Oportunista
+Ataques de oportunidade sempre são criticos
+
+	Incorporeo
+A cada 4 turnos um ser fantasmagorico aparece
+na arena, o jogador deve se aproximar desse e
+usar uma ação livre para tocar-lo. Falhar em 
+fazer isso da desvantagem em todos ataques por
+4 turnos
+
+	Matilha
+Esse inimigo invoca outros inimigos
+
+	Overflow
+Para qualquer criatura em um raio de 30m,
+curas acima da vida maxima da pontos de 
+vida temporarios
+
+	Protegido
+A cada 2 turnos, Orbes de Luz aparecerão,
+qualquer criatura em um raio de 1,5m 
+recebera pontos de vidas temporarios
+(1d4 para cada nível de cristal)
+
+	Explosivo
+A cada 2 turnos uma orbe com 5HP, aparece
+se essa orbe nao for destruida ela explodirá
+causando dano explosivo
+(1d10 por nivel de cristal)
