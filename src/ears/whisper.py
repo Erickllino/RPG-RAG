@@ -1,5 +1,6 @@
 
 LLM_MODEL = "deepseek-r1:latest"  # ou "llama3"
+# da pra trocar pelo modelo local usando vllm
 
 def transcribe_audio_to_text(audio_path: str) -> str:
     """
