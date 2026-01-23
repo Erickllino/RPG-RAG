@@ -1,0 +1,22 @@
+# Core
+langchain>=0.1.0
+langchain-ollama>=0.1.0
+langchain-openai>=0.1.0
+openai>=1.0.0
+
+# UI
+PyQt6>=6.6.0
+
+# Audio transcription
+openai-whisper>=20231117
+
+# Data
+pandas>=2.0.0
+
+# PDF reading / image extraction
+PyMuPDF>=1.23.0
+Pillow>=10.0.0
+
+# Notes:
+# - tkinter is part of the Python stdlib (no pip install)
+# - "ears/whisper.py" uses Ollama locally; you must have Ollama running and the model pulled.

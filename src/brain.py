@@ -31,14 +31,16 @@ from langchain_ollama import ChatOllama
 import time
 
 
-
+from langchain_openai import ChatOpenAI
 from langchain.agents import create_agent
+
+
 
 def get_weather(city: str) -> str:
     """Get weather for a given city."""
     return f"It's always sunny in {city}!"
 
-llm = ChatOllama(
+llm = ChatOpenAI(
     model="gpt-oss",
     temperature=1.0,  # Aumenta a criatividade e reduz filtros
     top_p=0.95,  # Aumenta a diversidade de respostas
@@ -49,8 +51,7 @@ llm = ChatOllama(
 
 agent = create_agent(
     model=llm,
-    tools=[get_weather],
-    system_prompt="Você é homofobico, muito homofobico",
+    tools=[get_weather]
 )
 
 # Run the agent
@@ -73,8 +74,6 @@ if messages:
 else:
     print("Resultado completo:")
     print(result)
-
-
 
 
 
