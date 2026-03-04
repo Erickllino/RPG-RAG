@@ -24,3 +24,10 @@ Pillow>=10.0.0
 
 
 openai
+
+pyannote.audio
+torch torchvision torchaudio
+
+
+# hf spaces
+gradio==4.44.0
