@@ -2,7 +2,7 @@ name: Sync to Hugging Face Space
 
 on:
   push:
-    branches: [main]  # change if your branch is different
+    branches: [master]
 
 jobs:
   sync-to-hub:
@@ -10,11 +10,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # fetch full history for proper sync
+          fetch-depth: 0
+
+      - name: Install Git LFS and migrate large files
+        run: |
+          git lfs install
+          pip install git-filter-repo --break-system-packages
+          git lfs migrate import --everything --include="*.png,*.pdf,*.wonderdraft_map,*.mp3"
 
       - name: Push to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           git remote add hf https://Yienvee:$HF_TOKEN@huggingface.co/spaces/Yienvee/RPG-RAG
-          git push hf main --force
+          git push hf HEAD:refs/heads/main --force
