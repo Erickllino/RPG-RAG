@@ -15,9 +15,8 @@ jobs:
       - name: Install Git LFS and migrate large files
         run: |
           git lfs install
-          pip install git-filter-repo
-          git lfs migrate import --above=10mb --include="*.png,*.pdf,*.wonderdraft_map" --everything
-          git lfs track "*.png" "*.pdf" "*.wonderdraft_map"
+          pip install git-filter-repo --break-system-packages
+          git lfs migrate import --everything --include="*.png,*.pdf,*.wonderdraft_map"
 
       - name: Push to Hugging Face Space
         env:
