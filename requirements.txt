@@ -20,3 +20,7 @@ Pillow>=10.0.0
 # Notes:
 # - tkinter is part of the Python stdlib (no pip install)
 # - "ears/whisper.py" uses Ollama locally; you must have Ollama running and the model pulled.
+
+
+
+openai

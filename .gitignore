@@ -2,3 +2,5 @@
 .vscode/
 __pycache_/
 /models
+.env
+/Data/Audios

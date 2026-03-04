@@ -1,150 +1,191 @@
 # 🗺️ Plano de Reestruturação — RPG-RAG para Hugging Face
 
-## 📋 Diagnóstico do projeto atual
+## 🎯 Visão geral
 
-O repositório atual foi projetado para **uso local**, com dependências que **não funcionam no Hugging Face Spaces**:
-
-| Componente atual | Problema para HF deploy |
-|---|---|
-| `Tkinter` / `PyQt6` | Interfaces desktop — sem suporte em ambiente web |
-| `Ollama` (LLM local) | Exige daemon rodando localmente |
-| `Whisper` local (arquivo MP3) | Upload de áudio precisa de outro mecanismo |
-| `PyMuPDF` (leitura de PDF) | Pode ser mantido, mas precisa de adaptação |
-| `src/brain.py`, `src/get_data.py` | Rascunhos/experimentos — não devem ir para produção |
-| `Data/` com arquivos locais | Dados precisam ser embarcados no repo ou carregados via upload |
+Uma única aplicação Gradio (um Space no HF) com **6 ferramentas em abas separadas**, todas compartilhando um único vector store FAISS. As ferramentas se comunicam tanto de forma independente (acessando os mesmos dados) quanto em pipeline sequencial (ex: áudio da sessão → resumo → contexto do assistente de sessão).
 
 ---
 
-## 🎯 Objetivo do deploy no Hugging Face
-
-Criar uma **interface web** (via Gradio) onde o usuário pode:
-
-1. Fazer upload de PDFs de lore/campanha ou colar texto
-2. Fazer perguntas sobre o conteúdo (RAG)
-3. Receber respostas do LLM com base nos documentos carregados
-
----
-
-## 🗂️ Nova estrutura de projeto proposta
+## 🗂️ Estrutura de projeto proposta
 
 ```
 RPG-RAG/
 │
-├── app.py                    ← Ponto de entrada do HF Space (Gradio)
-├── requirements.txt          ← Dependências atualizadas (sem Ollama/Tkinter/PyQt6)
-├── README.md                 ← README principal (mantido/atualizado)
+├── app.py                        ← Entry point: monta as abas Gradio e inicializa o vector store
+├── requirements.txt
+├── README.md
 ├── .gitignore
 │
+├── data/
+│   ├── lore/                     ← Arquivos .md com a lore do mundo (input do vector store)
+│   │   └── ekalia/               ← Exemplo: mundo Ekalia
+│   ├── sessions/                 ← Resumos de sessões gerados pela ferramenta de áudio
+│   │   └── summaries/            ← .txt ou .md gerados automaticamente
+│   └── vector_store/             ← FAISS index persistido (gerado, não commitado no git)
+│       ├── lore.index
+│       └── sessions.index
+│
 ├── src/
-│   ├── rag/
+│   │
+│   ├── vector_store/             ← Núcleo compartilhado por todas as ferramentas
 │   │   ├── __init__.py
-│   │   ├── loader.py         ← Carrega PDFs, TXTs, strings (substitui pdf_agent.py)
-│   │   ├── embedder.py       ← Gera embeddings e monta vector store (FAISS ou Chroma)
-│   │   └── retriever.py      ← Busca trechos relevantes para a pergunta
+│   │   ├── builder.py            ← Lê os .md e constrói/atualiza o FAISS index
+│   │   ├── retriever.py          ← Interface de busca semântica usada por todas as tools
+│   │   └── embedder.py           ← Modelo de embedding (sentence-transformers)
+│   │
+│   ├── tools/                    ← Uma subpasta por ferramenta
+│   │   │
+│   │   ├── session_audio/        ← FERRAMENTA 2: Áudio de sessão → resumo
+│   │   │   ├── __init__.py
+│   │   │   ├── transcriber.py    ← Whisper (via API ou local leve)
+│   │   │   ├── summarizer.py     ← Groq: resume a transcrição
+│   │   │   └── indexer.py        ← Adiciona o resumo ao vector store de sessões
+│   │   │
+│   │   ├── npc_generator/        ← FERRAMENTA 3: Gerador de NPC
+│   │   │   ├── __init__.py
+│   │   │   └── generator.py      ← Groq + retriever (lore + sessões) → NPC
+│   │   │
+│   │   ├── quest_generator/      ← FERRAMENTA 4: Gerador de missões
+│   │   │   ├── __init__.py
+│   │   │   └── generator.py      ← Groq + retriever (lore + sessões) → missão
+│   │   │
+│   │   ├── session_assistant/    ← FERRAMENTA 5: Assistente de sessão ao vivo
+│   │   │   ├── __init__.py
+│   │   │   └── assistant.py      ← Groq + retriever (lore + sessões) → chat
+│   │   │
+│   │   └── lore_writer/          ← FERRAMENTA 6: Escritor de lore
+│   │       ├── __init__.py
+│   │       └── writer.py         ← Groq + retriever (lore) → novo conteúdo de lore
 │   │
 │   ├── llm/
 │   │   ├── __init__.py
-│   │   └── chain.py          ← Monta a chain RAG com LLM de API (HF Inference ou OpenAI)
+│   │   └── groq_client.py        ← Cliente Groq centralizado (todas as tools usam esse)
 │   │
 │   └── ui/
 │       ├── __init__.py
-│       └── gradio_app.py     ← Componentes e lógica da interface Gradio
+│       ├── tab_vector_store.py   ← Aba 1: gerenciar e rebuild o vector store
+│       ├── tab_session_audio.py  ← Aba 2: upload de áudio → transcrição + resumo
+│       ├── tab_npc.py            ← Aba 3: gerador de NPC
+│       ├── tab_quest.py          ← Aba 4: gerador de missões
+│       ├── tab_session_chat.py   ← Aba 5: assistente de sessão (chat)
+│       └── tab_lore_writer.py    ← Aba 6: escritor de lore (chat)
 │
-├── data/
-│   └── example_lore/         ← Lore de exemplo para demo (textos .txt)
-│       └── ekalia_sample.txt
-│
-└── notebooks/                ← (opcional) experimentos e protótipos
+└── notebooks/                    ← Experimentos e rascunhos do projeto original
     ├── rag_experiment.ipynb
     └── pdf_extraction.ipynb
 ```
 
 ---
 
-## 🔧 Mudanças necessárias arquivo por arquivo
+## 🔗 Fluxo de dados entre as ferramentas
 
-### Remover / Arquivar
-- `src/main.py` — interface Tkinter, não compatível com HF
-- `src/main2.py` — protótipo PyQt6, não compatível com HF
-- `src/brain.py` — experimento com prompts inadequados, não vai para produção
-- `src/get_data.py` — tem bugs conhecidos, mover para `notebooks/`
-- `src/gen/` — geradores vazios, remover ou mover para notebooks
-
-### Adaptar / Migrar
-- `src/ears/whisper.py` → pode ser migrado para `src/rag/loader.py` com suporte a upload de áudio via Gradio (opcional, fase 2)
-- `src/pdf_reader/pdf_agent.py` → migrar lógica de extração para `src/rag/loader.py`
-- `Data/Ekalia/` → mover conteúdo de exemplo para `data/example_lore/`
-
-### Criar do zero
-- `app.py` — entry point Gradio para o HF Space
-- `src/rag/embedder.py` — embeddings com `sentence-transformers` (gratuito, roda no HF)
-- `src/rag/retriever.py` — busca vetorial com FAISS
-- `src/llm/chain.py` — integração com LLM via API (ex: `HuggingFaceHub`, `groq`, ou `openai`)
+```
+data/lore/*.md
+      │
+      ▼
+[builder.py] ───────────────────────FAISS lore.index
+                                            │
+      ┌─────────────────────────────────────┼───────────────────────┐
+      │                |                    │                       │
+      ▼                ▼                    │                       ▼
+[quest_generator][npc_generator]            │                 [lore_writer]
+      │                │                    │                       │
+      │                └────────────────────┐                       ▼
+      └───────────────────────────>[session_assistant]         (novo .md)                    
+                            ▲                                       │ 
+[session_audio] ─── FAISS sessions.index                            │
+áudio → transcrição                                                 ▼
+      → resumo                                                  data/lore/ (opcional)
+      → indexado
+                         
+                
+```
 
 ---
 
-## 📦 Novo `requirements.txt`
+## ⚙️ Vector Store — detalhe importante
+
+O FAISS será dividido em **dois indexes separados**, mas acessados pela mesma interface:
+
+| Index            | Fonte                          | Atualizado por                           |
+| ---------------- | ------------------------------ | ---------------------------------------- |
+| `lore.index`     | `data/lore/*.md`               | Manualmente via aba "Vector Store"       |
+| `sessions.index` | `data/sessions/summaries/*.md` | Automaticamente pela ferramenta de áudio |
+
+O `retriever.py` aceita um parâmetro `source` para buscar em um ou nos dois indexes ao mesmo tempo.
+
+---
+
+## 🤖 LLM — Groq centralizado
+
+Todas as ferramentas usam `src/llm/groq_client.py`. Modelos sugeridos:
+
+| Ferramenta           | Modelo Groq sugerido      | Motivo                   |
+| -------------------- | ------------------------- | ------------------------ |
+| Resumo de sessão     | `llama-3.1-8b-instant`    | Rápido, texto longo      |
+| Gerador de NPC       | `llama-3.3-70b-versatile` | Mais criativo            |
+| Gerador de missões   | `llama-3.3-70b-versatile` | Mais criativo            |
+| Assistente de sessão | `llama-3.1-8b-instant`    | Baixa latência (ao vivo) |
+| Escritor de lore     | `llama-3.3-70b-versatile` | Qualidade de escrita     |
+
+---
+
+## 📦 `requirements.txt`
 
 ```txt
 gradio>=4.0
 langchain>=0.2
 langchain-community>=0.2
+langchain-groq>=0.1
 sentence-transformers>=2.5
 faiss-cpu>=1.7
-pymupdf>=1.23           # leitura de PDFs (PyMuPDF)
+groq>=0.5
+openai-whisper>=20231117     # transcrição de áudio (modelo tiny/base para HF)
 python-dotenv>=1.0
-
-# Escolha UM provedor de LLM (descomente o que for usar):
-# openai>=1.0           # via OpenAI API
-# groq>=0.5             # via Groq API (rápido e gratuito com limite)
-# huggingface-hub>=0.20 # via HF Inference API
+pymupdf>=1.23                # se quiser manter suporte a PDF futuramente
 ```
 
-> ⚠️ **Remover**: `pyqt6`, `tkinter` (built-in), `ollama`, `openai-whisper`
+---
+
+## 🔑 Secrets no HF Space
+
+| Variável       | Uso                      |
+| -------------- | ------------------------ |
+| `GROQ_API_KEY` | Todas as ferramentas LLM |
 
 ---
 
-## 🔑 Variáveis de ambiente (Secrets no HF Space)
+## 🚀 Ordem de implementação recomendada
 
-No painel do HF Space → **Settings → Repository secrets**, adicione:
-
-| Variável | Descrição |
-|---|---|
-| `OPENAI_API_KEY` | Se usar OpenAI como LLM |
-| `GROQ_API_KEY` | Se usar Groq como LLM (recomendado: grátis) |
-| `HF_TOKEN` | Se usar HF Inference API como LLM |
-
----
-
-## 🚀 Ordem de execução recomendada
-
-1. **Criar `app.py`** com interface Gradio básica (upload de PDF + chat)
-2. **Implementar `src/rag/loader.py`** — extração de texto de PDFs e TXTs
-3. **Implementar `src/rag/embedder.py`** — embeddings + FAISS index
-4. **Implementar `src/rag/retriever.py`** — busca semântica
-5. **Implementar `src/llm/chain.py`** — prompt + LLM + resposta
-6. **Conectar tudo em `src/ui/gradio_app.py`**
-7. **Atualizar `requirements.txt`**
-8. **Testar localmente** com `python app.py`
-9. **Push para HF Space** via git
+1. `src/llm/groq_client.py` — base de tudo
+2. `src/vector_store/` — builder + embedder + retriever
+3. `src/tools/session_audio/` — pipeline de áudio (ferramenta 2)
+4. `src/tools/npc_generator/` — gerador de NPC (ferramenta 3)
+5. `src/tools/quest_generator/` — gerador de missões (ferramenta 4)
+6. `src/tools/session_assistant/` — assistente de sessão (ferramenta 5)
+7. `src/tools/lore_writer/` — escritor de lore (ferramenta 6)
+8. `src/ui/` — todas as abas Gradio
+9. `app.py` — junta tudo
+10. Deploy no HF Space
 
 ---
 
-## 💡 Recomendação de LLM para HF Space
+## 🗑️ O que remover do projeto atual
 
-| Opção | Custo | Qualidade | Setup |
-|---|---|---|---|
-| **Groq API** (llama3, mixtral) | Gratuito (com limite) | ⭐⭐⭐⭐ | Fácil |
-| HF Inference API | Gratuito (lento) | ⭐⭐⭐ | Fácil |
-| OpenAI (gpt-4o-mini) | Pago | ⭐⭐⭐⭐⭐ | Fácil |
-| Ollama | Gratuito | ⭐⭐⭐⭐ | ❌ Não funciona no HF |
+| Arquivo/Pasta  | Motivo                                  |
+| -------------- | --------------------------------------- |
+| `src/main.py`  | Interface Tkinter — não funciona no HF  |
+| `src/main2.py` | Protótipo PyQt6 — não funciona no HF    |
+| `src/brain.py` | Experimento com prompts inadequados     |
+| `src/gen/`     | Geradores vazios                        |
+| `models/`      | Modelos locais pesados — não usar no HF |
+| `Data/Audios/` | Áudios locais — não commitar            |
 
-> **Recomendação**: comece com **Groq** (llama-3.1-8b-instant) — é gratuito, rápido e fácil de configurar.
+## ✅ O que migrar/aproveitar
 
----
-
-## 📝 Notas finais
-
-- O `Data/Campaings/campaings.json` pode ser mantido como dado de exemplo no repositório
-- A pasta `models/` (modelos locais qwen) **não deve ir para o HF** — é pesada e não é usada na versão web
-- Adicione `models/` e `Data/Audios/` ao `.gitignore` se ainda não estiverem
+| Arquivo atual                 | Destino novo                                              |
+| ----------------------------- | --------------------------------------------------------- |
+| `src/pdf_reader/pdf_agent.py` | Lógica base para `src/vector_store/builder.py`            |
+| `src/ears/whisper.py`         | Lógica base para `src/tools/session_audio/transcriber.py` |
+| `Data/Ekalia/*.txt`           | Converter para `.md` e mover para `data/lore/ekalia/`     |
+| `src/get_data.py`             | `notebooks/` (com bug documentado)                        |

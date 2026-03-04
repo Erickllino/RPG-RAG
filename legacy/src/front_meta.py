@@ -3,6 +3,15 @@ import sys
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QGridLayout, QWidget, QPushButton
 
+"""
+
+Menus - Inicial botoes para -> Durante a sessão,
+
+
+
+"""
+
+
 
 
 WINDOW_TITLES = [

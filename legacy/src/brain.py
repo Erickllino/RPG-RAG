@@ -31,6 +31,51 @@ from langchain_openai import OpenAIEmbeddings
 
 
 
+class RAG():
+    def __init__(self):
+        pass
+
+    def transcribe_audio_to_text(audio_path: str) -> str:
+        """
+        Transcreve um arquivo de áudio para texto usando Whisper.
+
+        Args:
+            audio_path: O caminho para o arquivo de áudio.
+
+        Returns:
+            A transcrição do áudio como uma string.
+        """
+        import whisper
+
+        model = whisper.load_model("large")
+        result = model.transcribe(audio_path)
+        return result["text"]
+
+    def summarize_session_text(session_text: str) -> str:
+        """
+        Resume o texto da sessão usando um modelo LLM.
+
+        Args:
+            session_text: O texto completo da sessão.
+
+        Returns:
+            Um resumo do texto da sessão.
+        """
+
+
+        from openai import OpenAI
+        client = OpenAI(api_key = )
+
+        response = client.responses.create(
+            model="gpt-5.2",
+            input="Write a one-sentence bedtime story about a unicorn."
+        )
+
+        print(response.output_text)
+        return response.output_text
+
+
+
 def run_openai():
 
     # Model

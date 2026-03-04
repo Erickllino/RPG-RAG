@@ -2,7 +2,7 @@ Em um mundo distante, no reino de Ekalia, as trevas começaram a se espalhar qua
 
 No entanto, havia uma profecia ancestral que falava sobre sete heróis destinados a se erguer contra as sombras e salvar Ekalia. Cada herói possuía habilidades únicas e destinos entrelaçados.
 
-Erza, o mago, dominava as artes místicas e controlava os elementos com habilidade incomparável. Urzof, o druida, era conectado à natureza e podia convocar a força dos animais e das plantas. Arthur, o paladino, era o defensor da justiça, empunhando uma espada sagrada contra as trevas.
+Erza, o mago, dominava as artes místicas e controlava os elementos com habilidade incomparável. Urzof, o druida, era conectado à natureza e podia convocar a força dos animais e das plantas. Arthur, o paladino, era o defensor da justiça, dizem que ele previa ataques antes mesmo do oponente pensar em fazer-los.
 
 Faira, a sacerdotisa, era abençoada pelos deuses e curava os feridos com suas preces. Eliria, a pirata, era mestra na arte da astúcia e navegação, conhecendo os mares como ninguém. Ivo, o bárbaro, era uma força imparável em combate, com sua fúria desencadeada contra qualquer inimigo. Aghamina, a ladina, era especialista em stealth e enganos, capaz de se infiltrar nos lugares mais impenetráveis.
 

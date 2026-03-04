@@ -1,0 +1,20 @@
+name: Sync to Hugging Face Space
+
+on:
+  push:
+    branches: [main]  # change if your branch is different
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # fetch full history for proper sync
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git remote add hf https://Yienvee:$HF_TOKEN@huggingface.co/spaces/Yienvee/RPG-RAG
+          git push hf main --force
