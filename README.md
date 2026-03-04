@@ -1,3 +1,15 @@
+---
+title: RPG-RAG
+emoji: 🎲
+colorFrom: purple
+colorTo: blue
+sdk: gradio
+sdk_version: "4.44.0"
+app_file: app.py
+pinned: false
+---
+
+
 # RPG-RAG
 
 Um kit pessoal para organizar **lore/campanhas de RPG** e usar **LLMs locais** pra ajudar durante e depois das sessões.
