@@ -16,7 +16,7 @@ jobs:
         run: |
           git lfs install
           pip install git-filter-repo --break-system-packages
-          git lfs migrate import --everything --include="*.png,*.pdf,*.wonderdraft_map"
+          git lfs migrate import --everything --include="*.png,*.pdf,*.wonderdraft_map,*.mp3"
 
       - name: Push to Hugging Face Space
         env:
