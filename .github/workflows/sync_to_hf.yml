@@ -2,7 +2,7 @@ name: Sync to Hugging Face Space
 
 on:
   push:
-    branches: [main]  # change if your branch is different
+    branches: [master]  # change if your branch is different
 
 jobs:
   sync-to-hub:
