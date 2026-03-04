@@ -12,11 +12,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Git LFS
+      - name: Install Git LFS and migrate large files
         run: |
           git lfs install
+          pip install git-filter-repo
+          git lfs migrate import --above=10mb --include="*.png,*.pdf,*.wonderdraft_map" --everything
           git lfs track "*.png" "*.pdf" "*.wonderdraft_map"
-          git add .gitattributes
 
       - name: Push to Hugging Face Space
         env:
