@@ -2,7 +2,7 @@ name: Sync to Hugging Face Space
 
 on:
   push:
-    branches: [master]  # change if your branch is different
+    branches: [master]
 
 jobs:
   sync-to-hub:
@@ -10,8 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # fetch full history for proper sync
-      
+          fetch-depth: 0
+
+      - name: Install Git LFS
+        run: |
+          git lfs install
+          git lfs track "*.png" "*.pdf" "*.wonderdraft_map"
+          git add .gitattributes
+
       - name: Push to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
