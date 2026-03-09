@@ -4,8 +4,6 @@ langchain-ollama>=0.1.0
 langchain-openai>=0.1.0
 openai>=1.0.0
 
-# UI
-PyQt6>=6.6.0
 
 # Audio transcription
 openai-whisper>=20231117
@@ -30,7 +28,6 @@ torch
 torchvision
 torchaudio
 
-pyaudioop
 
 # hf spaces
 gradio==4.44.0
