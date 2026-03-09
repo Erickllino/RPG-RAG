@@ -30,4 +30,5 @@ torchaudio
 
 
 # hf spaces
+audioop-lts
 gradio==4.44.0

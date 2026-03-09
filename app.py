@@ -1,15 +1,37 @@
 # ponta de entrada do gradio
 
-
+from src.llm.client import infer_model
 import gradio as gr
 
-def my_function(user_input):
-    return "You said: " + user_input
+def main_menu():
+    # Aqui escolhe entre os botoes de
+    # 1 - Prepare
+    # 2 - Playing
 
-demo = gr.Interface(
-    fn=my_function,       # the function to call
-    inputs="text",        # what the user types
-    outputs="text",       # what gets shown back
-)
+    # Em prepare:
+    # Session audio
+    # Lore writer
 
-demo.launch()
+    # Em playing:
+    # Session Assistent
+    # NPC_Gen
+    # Quest_Gen
+    
+    
+    return
+
+
+
+def chat(user_input, history):
+    messages = [{"role": m["role"], "content": m["content"]} for m in history]
+    content, _ = infer_model(user_input, messages=messages)
+    return content
+
+
+
+
+if __name__ == "__main__":
+
+    demo = gr.ChatInterface(fn=chat)
+
+    demo.launch()

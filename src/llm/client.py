@@ -8,28 +8,19 @@ from groq import Groq
 # Debug: print to confirm key is loaded
 api_key = os.environ.get('GROQ_API_KEY')
 
-def infer_model(msg, massages = []):
+def infer_model(msg, messages = []):
     client = Groq(api_key=api_key)
     
 
-    massages.append({"role":"user", "content": msg})
+    messages.append({"role":"user", "content": msg})
 
         
     chat_completion = client.chat.completions.create(
-        messages=massages,
+        messages=messages,
         model="groq/compound",
     )
 
-    return chat_completion, messages 
-
-msg = ""
-messages = []
-while(True):
-    msg = input("\nescreva: \n")
-    if msg == "quit":
-        break
-    out, messages = infer_model(msg, messages)
-    print(out.choices[0].message.content)
+    return chat_completion.choices[0].message.content, messages
 
 
 
