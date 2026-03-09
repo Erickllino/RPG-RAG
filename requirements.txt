@@ -21,4 +21,4 @@ Pillow>=10.0.0
 
 # HF Spaces
 audioop-lts
-gradio==4.44.0
+gradio>=5.0.0
