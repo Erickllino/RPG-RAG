@@ -1,6 +1,8 @@
-from dotenv import load_dotenv
-from pathlib import Path
-load_dotenv(override=True)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(override=True)
+except ImportError:
+    pass
 
 import os
 from groq import Groq
