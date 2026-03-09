@@ -30,6 +30,7 @@ torch
 torchvision
 torchaudio
 
+pyaudioop
 
 # hf spaces
 gradio==4.44.0
