@@ -32,6 +32,7 @@ def chat(user_input, history):
 
 if __name__ == "__main__":
 
+    
     demo = gr.ChatInterface(fn=chat)
 
     demo.launch()
