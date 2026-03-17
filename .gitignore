@@ -1,6 +1,9 @@
 .venv/
 .vscode/
-__pycache_/
+__pycache__/
 /models
 .env
 /Data/Audios
+*.png
+/Data/Rules
+/legacy
