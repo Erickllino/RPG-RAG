@@ -23,7 +23,11 @@ def main_menu():
 
 
 def chat(user_input, history):
-    messages = [{"role": m["role"], "content": m["content"]} for m in history]
+    print(history)
+    messages = []
+    if history:
+        for m in history:
+            messages.append({"role": m["role"], "content": m["content"]})
     content, _ = infer_model(user_input, messages=messages)
     return content
 
