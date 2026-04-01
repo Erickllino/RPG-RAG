@@ -12,8 +12,7 @@ from groq import Groq
 
 def infer_model(msg, messages = None):
     #api_key = os.environ.get('GROQ_API_KEY')
-    from dotenv import load_dotenv
-    load_dotenv(override=True)
+
     client = Groq()
     
     if messages is None:
