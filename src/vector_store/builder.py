@@ -1,13 +1,6 @@
-
-from langchain_community.document_loaders import TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
+from pathlib import Path
 
 from .configs import DATA_DIR, INDEX_DIR, EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
-
-
-from pathlib import Path
 
 
 
@@ -36,14 +29,8 @@ def get_data():
     return data
 
 
-def build_embeddings() -> HuggingFaceEmbeddings:
+def build_embeddings():
     """Instancia o modelo de embeddings HuggingFace."""
-    print(f"[builder] Carregando modelo de embeddings: {EMBEDDING_MODEL}")
-    return HuggingFaceEmbeddings(
-        model_name=EMBEDDING_MODEL,
-        model_kwargs={"device": "cpu"},
-        encode_kwargs={"normalize_embeddings": True},
-    )
-
+    raise NotImplementedError
 
 

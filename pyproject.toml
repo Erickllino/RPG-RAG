@@ -16,6 +16,7 @@ dependencies = [
     "pillow>=12.1.1",
     "pyannote-audio>=4.0.4",
     "pymupdf>=1.23.0",
+    "python-dotenv>=1.2.2",
     "torch>=2.10.0",
     "torchaudio>=2.10.0",
     "torchvision>=0.25.0",
