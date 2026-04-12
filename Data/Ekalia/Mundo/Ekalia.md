@@ -1,6 +1,6 @@
 # Ekalia
 
-Ekalia, atualmente em 2020 depois da 
+Ekalia, atualmente em 2020 depois da queda de zeref
 
 
 

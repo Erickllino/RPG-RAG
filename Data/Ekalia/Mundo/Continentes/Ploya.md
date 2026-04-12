@@ -1,12 +1,13 @@
 Países:
-- ### Leste :
+- ### Oeste :
 	- [[Matareal]]
 	- [[Steinberg]]
 	- [[Silvanvele]]
 	- [[Maraven]]
+	- [[Valdrenoch]]
 - ### Centro :
 	-  [[Terra Mijada]]
-- ### Oeste :
+- ### Leste :
 	- [[Farragemar]]
 	- [[Ressamar]]
 
