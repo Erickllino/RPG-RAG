@@ -1,4 +1,5 @@
 .venv/
+.venv-vllm/
 .vscode/
 __pycache__/
 /models
@@ -7,3 +8,5 @@ __pycache__/
 *.png
 /Data/Rules
 /legacy
+
+vllm/Models

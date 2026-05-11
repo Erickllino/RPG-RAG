@@ -42,6 +42,18 @@ theme = gr.themes.Soft(
     neutral_hue="stone",
 )
 
+import argparse
+
+parser = argparse.ArgumentParser(
+                    prog='RPG-RAG',
+                    description='What the program does',
+                    epilog='Text at the bottom of help')
+
+parser.add_argument('--local', action='store_true', help='Go directly to the Prepare tab')
+
+
+
+
 with gr.Blocks(title="RPG-RAG") as demo:
 
     with gr.Tabs(selected=0, elem_id="root-tabs") as root_tabs:
@@ -84,4 +96,7 @@ with gr.Blocks(title="RPG-RAG") as demo:
 
 
 if __name__ == "__main__":
+
+    if parser.parse_args().local:
+        print("TEST")
     demo.launch(theme=theme, css=CSS)

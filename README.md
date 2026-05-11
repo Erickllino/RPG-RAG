@@ -99,6 +99,88 @@ python src/pdf_reader/pdf_agent.py
 
 Por padrão o script tenta ler `DH.pdf` na raiz. Se não existir, edite `test_pdf_path` no final do arquivo.
 
+## LLM Local com vLLM (opcional)
+
+O projeto suporta rodar um LLM local via [vLLM](https://github.com/vllm-project/vllm)
+como alternativa à API da Groq. Útil pra desenvolvimento offline, custos zero
+e (futuramente) servir modelos fine-tuned.
+
+### Por que um venv separado
+
+vLLM tem requisitos rígidos de torch/CUDA que conflitam com Whisper e
+`langchain-huggingface` no venv principal. A solução padrão é isolar o vLLM
+em seu próprio ambiente — o projeto principal só conversa com ele via HTTP.
+
+```
+.venv/         ← venv principal (Whisper, FAISS, embeddings, gradio…)
+.venv-vllm/    ← venv isolado, só com vllm + suas deps CUDA
+```
+
+### Setup (uma vez)
+
+Pré-requisito: GPU NVIDIA com pelo menos 16GB VRAM (testado em RTX 5060 Ti).
+
+```bash
+uv venv .venv-vllm --python 3.12
+uv pip install --python .venv-vllm/bin/python vllm --torch-backend=auto
+```
+
+A flag `--torch-backend=auto` deixa o uv detectar a versão do CUDA pelo
+`nvidia-smi` e baixar o wheel compatível. Em GPUs Blackwell (RTX 50xx) com
+driver recente isso é o stack CUDA 13.
+
+### Subindo o servidor
+
+```bash
+python vllm/run_local.py
+```
+
+O script:
+- Aponta pro binário em `.venv-vllm/bin/vllm`
+- Configura `LD_LIBRARY_PATH` pra encontrar os `.so` de CUDA do venv isolado
+- Sobe um servidor **OpenAI-compatible** em `http://localhost:8000/v1`
+- Modelo padrão: `Qwen/Qwen2.5-7B-Instruct-AWQ` (4-bit, cabe folgado em 16GB)
+
+Primeira execução baixa o modelo (~5GB) em `vllm/Models/` (ignorado pelo git).
+
+### Usando no código
+
+`src/llm/client.py` expõe três papéis (`Role`):
+
+```python
+from src.llm.client import get_llm, Role
+
+llm = get_llm(Role.FAST)      # → Groq llama-3.1-8b-instant (padrão)
+llm = get_llm(Role.CREATIVE)  # → Groq llama-3.3-70b-versatile
+llm = get_llm(Role.LOCAL)     # → vLLM local (Qwen2.5-7B-AWQ)
+```
+
+`Role.LOCAL` usa `ChatOpenAI` apontando pro endpoint local — não precisa de
+nenhum SDK específico do vLLM.
+
+### Variáveis de ambiente (opcionais)
+
+Todas têm default sensato; só sobrescreva no `.env` se precisar mudar:
+
+| Variável | Default | Para quê |
+| --- | --- | --- |
+| `VLLM_BASE_URL` | `http://localhost:8000/v1` | URL do servidor local |
+| `VLLM_MODEL` | `Qwen/Qwen2.5-7B-Instruct-AWQ` | Modelo servido pelo vLLM |
+| `VLLM_API_KEY` | `EMPTY` | Token (vLLM aceita qualquer string por padrão) |
+
+### Smoke test
+
+Com o servidor rodando em outro terminal:
+
+```bash
+python -m src.llm.client --local
+```
+
+Deve imprimir uma resposta do Qwen local. Sem `--local`, usa Groq (`Role.CREATIVE`)
+— bom pra confirmar que o fallback continua funcionando.
+
+---
+
 ## Notas importantes / TODOs
 
 - `src/brain.py` contém experimentos com agentes e prompts de teste. Use como referência de experimentação, não como “produção”.
