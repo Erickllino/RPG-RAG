@@ -14,7 +14,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
 
-
+from src.tools.lore_writer.writer import get_data
 class Role(StrEnum):
     """
     Papel funcional do LLM. Cada papel mapeia pra um modelo + temperatura
@@ -39,6 +39,10 @@ _MODEL_CONFIG: dict[Role, ModelSpec] = {
         0.3,
     ),
 }
+
+tools = [
+    get_data,
+]
 
 
 def get_llm(role: Role = Role.FAST) -> BaseChatModel:
@@ -114,13 +118,18 @@ if __name__ == "__main__":
 
         user_input = input("\nVocê: ")
 
+        from langchain.agents import create_agent
+        agent =  create_agent(
+            model=llm,
+            tools=tools,
+        )
         if user_input.lower() in ["sair", "exit", "quit"]:
             break
 
         messages.append(HumanMessage(content=user_input))   
         
-        response = llm.invoke(messages)
-        print(f"\n{spec.model}: {response.content}")
+        response = agent.invoke({"messages": messages})
+        print(f"\n{spec.model}: {response['messages'][-1].content}")
 
 
-        messages.append(AIMessage(content=response.content))
+        messages.append(AIMessage(content=response['messages'][-1].content))

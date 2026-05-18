@@ -100,6 +100,8 @@ def main() -> int:
         "--gpu-memory-utilization", str(GPU_MEMORY_UTILIZATION),
         "--dtype", "auto",
         "--download-dir", str(SCRIPT_DIR / "Models"),
+        "--enable-auto-tool-choice",
+        "--tool-call-parser", "hermes",
     ]
 
     env = {**os.environ, "LD_LIBRARY_PATH": _build_ld_library_path()}

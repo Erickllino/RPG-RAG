@@ -1,6 +1,4 @@
-from src.llm.client import infer_model
 
-import vector_store.retriver 
 
 SYSTEM_PROMPT = (
     "You are a helpful RPG session assistant for the Ekalia campaign. "
@@ -9,15 +7,41 @@ SYSTEM_PROMPT = (
 )
 
 
-def chat(message, history):
-    if not message.strip():
-        return "", history
+from langchain.tools import tool
 
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-    for m in history:
-        messages.append({"role": m["role"], "content": m["content"]})
+import os
 
-    content, _ = infer_model(message, messages=messages)
-    history.append({"role": "user", "content": message})
-    history.append({"role": "assistant", "content": content})
-    return "", history
+@tool
+def get_data(query: str) -> dict:
+    """Busca informações de lore do RPG a partir de uma query em linguagem natural.
+    
+    Use esta tool quando o usuário perguntar sobre personagens, locais,
+    eventos ou qualquer elemento narrativo do mundo do jogo.
+    """
+    from pathlib import Path
+    PATH = Path(__file__).resolve().parents[2] 
+    DATA_DIR = PATH / "Data" / "Ekalia"   
+    data = {
+        "File Name": [],
+        "Context": [],
+        "Content": [],
+    }
+
+    for file_path in DATA_DIR.rglob("*.md"):
+        content = file_path.read_text(encoding="utf-8")
+
+        data["File Name"].append(file_path.name)
+        data["Content"].append(content)
+
+        # Context = relative path inside Ekalia
+        context = file_path.parent.relative_to(DATA_DIR)
+        data["Context"].append(str(context))
+
+        print(f"Read file: {context}/{file_path.name} ({len(content)})")
+
+    return data
+
+
+
+
+
