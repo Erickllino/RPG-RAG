@@ -1,25 +1,3 @@
-"""
-Sobe um servidor vLLM local com API compatível com OpenAI.
-
-Por que um venv separado?
--------------------------
-vLLM tem requisitos rígidos de torch/CUDA que conflitam com Whisper,
-langchain-huggingface e outras libs ML do projeto principal. A prática
-padrão é isolar vLLM em seu próprio venv (.venv-vllm) e falar com ele
-só via HTTP — assim o venv principal não sofre.
-
-Setup (uma vez)
----------------
-    uv venv .venv-vllm --python 3.12
-    uv pip install --python .venv-vllm/bin/python vllm --torch-backend=cu128
-
-Uso
----
-    python vllm/run_local.py
-
-A API fica em http://localhost:8000/v1 (formato OpenAI).
-O cliente em src/llm/client.py já aponta pra cá quando usa Role.LOCAL.
-"""
 
 import os
 import subprocess
@@ -29,7 +7,8 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
-
+VLLM_VENV = SCRIPT_DIR / ".venv"  
+VLLM_BIN  = VLLM_VENV / "bin" / "vllm"
 
 
 # ── Configuração ────────────────────────────────────────────────
@@ -47,6 +26,12 @@ MAX_MODEL_LEN = 8192
 GPU_MEMORY_UTILIZATION = 0.85
 
 
+def _vllm_site_packages() -> Path:
+    """Localiza site-packages do .venv-vllm (versão minor do Python pode variar)."""
+    candidates = sorted((VLLM_VENV / "lib").glob("python*/site-packages"))
+    if not candidates:
+        raise FileNotFoundError(f"site-packages não encontrado em {VLLM_VENV}/lib")
+    return candidates[0]
 
 
 def _build_ld_library_path() -> str:
@@ -62,15 +47,31 @@ def _build_ld_library_path() -> str:
     return os.pathsep.join(parts)
 
 
-
+def _check_setup() -> str | None:
+    """Retorna mensagem de erro se o setup do venv estiver faltando."""
+    if not VLLM_VENV.is_dir():
+        return (
+            f"Venv do vLLM não encontrado em {VLLM_VENV}.\n"
+            "Setup (uma vez):\n"
+            "    uv venv .venv-vllm --python 3.12\n"
+            "    uv pip install --python .venv-vllm/bin/python vllm --torch-backend=cu128"
+        )
+    if not VLLM_BIN.is_file():
+        return (
+            f"Binário 'vllm' não encontrado em {VLLM_BIN}.\n"
+            "Instale com:\n"
+            "    uv pip install --python .venv-vllm/bin/python vllm --torch-backend=cu128"
+        )
+    return None
 
 
 def main() -> int:
-
-    VENV = ".venv/bin/vllm"
+    if err := _check_setup():
+        print(err)
+        return 1
 
     cmd = [
-        VENV, "serve", MODEL,
+        str(VLLM_BIN), "serve", MODEL,
         "--host", HOST,
         "--port", str(PORT),
         "--max-model-len", str(MAX_MODEL_LEN),
@@ -81,7 +82,12 @@ def main() -> int:
         "--tool-call-parser", "hermes",
     ]
 
-    env = {**os.environ, "LD_LIBRARY_PATH": _build_ld_library_path()}
+    env = {
+        **os.environ,
+        "LD_LIBRARY_PATH": _build_ld_library_path(),
+        "VLLM_ATTENTION_BACKEND": "FLASH_ATTN",
+        "VLLM_USE_FLASHINFER_SAMPLER": "0",   # ← isso aqui
+    }
 
     print(f"Usando vLLM de: {VLLM_VENV}")
     print("Comando:")
