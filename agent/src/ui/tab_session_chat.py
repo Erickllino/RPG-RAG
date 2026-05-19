@@ -1,7 +1,7 @@
 import gradio as gr
-from src.llm.client import infer_model
+from agent.src.llm.client import infer_model
 
-from src.tools.session_assistant.assistant import chat
+from agent.src.tools.session_assistant.assistant import chat
 
 
 

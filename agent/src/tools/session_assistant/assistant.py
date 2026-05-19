@@ -1,4 +1,4 @@
-from src.llm.client import infer_model
+from agent.src.llm.client import infer_model
 
 
 SYSTEM_PROMPT = (

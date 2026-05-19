@@ -1,25 +1,3 @@
-"""
-Sobe um servidor vLLM local com API compatível com OpenAI.
-
-Por que um venv separado?
--------------------------
-vLLM tem requisitos rígidos de torch/CUDA que conflitam com Whisper,
-langchain-huggingface e outras libs ML do projeto principal. A prática
-padrão é isolar vLLM em seu próprio venv (.venv-vllm) e falar com ele
-só via HTTP — assim o venv principal não sofre.
-
-Setup (uma vez)
----------------
-    uv venv .venv-vllm --python 3.12
-    uv pip install --python .venv-vllm/bin/python vllm --torch-backend=cu128
-
-Uso
----
-    python vllm/run_local.py
-
-A API fica em http://localhost:8000/v1 (formato OpenAI).
-O cliente em src/llm/client.py já aponta pra cá quando usa Role.LOCAL.
-"""
 
 import os
 import subprocess
@@ -29,8 +7,8 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
-VLLM_VENV = PROJECT_ROOT / ".venv-vllm"
-VLLM_BIN = VLLM_VENV / "bin" / "vllm"
+VLLM_VENV = SCRIPT_DIR / ".venv"  
+VLLM_BIN  = VLLM_VENV / "bin" / "vllm"
 
 
 # ── Configuração ────────────────────────────────────────────────
@@ -104,7 +82,12 @@ def main() -> int:
         "--tool-call-parser", "hermes",
     ]
 
-    env = {**os.environ, "LD_LIBRARY_PATH": _build_ld_library_path()}
+    env = {
+        **os.environ,
+        "LD_LIBRARY_PATH": _build_ld_library_path(),
+        "VLLM_ATTENTION_BACKEND": "FLASH_ATTN",
+        "VLLM_USE_FLASHINFER_SAMPLER": "0",   # ← isso aqui
+    }
 
     print(f"Usando vLLM de: {VLLM_VENV}")
     print("Comando:")

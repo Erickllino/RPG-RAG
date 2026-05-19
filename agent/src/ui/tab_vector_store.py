@@ -1,5 +1,5 @@
 import gradio as gr
-from src.vector_store.configs import INDEX_DIR
+from agent.src.vector_store.configs import INDEX_DIR
 
 
 def _index_exists() -> bool:

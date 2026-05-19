@@ -14,7 +14,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
 
-from src.tools.lore_writer.writer import get_data
+from agent.src.tools.lore_writer.writer import get_data
 class Role(StrEnum):
     """
     Papel funcional do LLM. Cada papel mapeia pra um modelo + temperatura
