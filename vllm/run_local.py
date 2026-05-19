@@ -29,8 +29,7 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
-VLLM_VENV = PROJECT_ROOT / ".venv-vllm"
-VLLM_BIN = VLLM_VENV / "bin" / "vllm"
+
 
 
 # ── Configuração ────────────────────────────────────────────────
@@ -48,12 +47,6 @@ MAX_MODEL_LEN = 8192
 GPU_MEMORY_UTILIZATION = 0.85
 
 
-def _vllm_site_packages() -> Path:
-    """Localiza site-packages do .venv-vllm (versão minor do Python pode variar)."""
-    candidates = sorted((VLLM_VENV / "lib").glob("python*/site-packages"))
-    if not candidates:
-        raise FileNotFoundError(f"site-packages não encontrado em {VLLM_VENV}/lib")
-    return candidates[0]
 
 
 def _build_ld_library_path() -> str:
@@ -69,31 +62,15 @@ def _build_ld_library_path() -> str:
     return os.pathsep.join(parts)
 
 
-def _check_setup() -> str | None:
-    """Retorna mensagem de erro se o setup do venv estiver faltando."""
-    if not VLLM_VENV.is_dir():
-        return (
-            f"Venv do vLLM não encontrado em {VLLM_VENV}.\n"
-            "Setup (uma vez):\n"
-            "    uv venv .venv-vllm --python 3.12\n"
-            "    uv pip install --python .venv-vllm/bin/python vllm --torch-backend=cu128"
-        )
-    if not VLLM_BIN.is_file():
-        return (
-            f"Binário 'vllm' não encontrado em {VLLM_BIN}.\n"
-            "Instale com:\n"
-            "    uv pip install --python .venv-vllm/bin/python vllm --torch-backend=cu128"
-        )
-    return None
+
 
 
 def main() -> int:
-    if err := _check_setup():
-        print(err)
-        return 1
+
+    VENV = ".venv/bin/vllm"
 
     cmd = [
-        str(VLLM_BIN), "serve", MODEL,
+        VENV, "serve", MODEL,
         "--host", HOST,
         "--port", str(PORT),
         "--max-model-len", str(MAX_MODEL_LEN),

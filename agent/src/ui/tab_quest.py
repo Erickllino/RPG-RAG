@@ -1,5 +1,5 @@
 import gradio as gr
-from src.llm.client import infer_model
+from agent.src.llm.client import infer_model
 
 SYSTEM_PROMPT = (
     "You are a creative RPG game master assistant for the Ekalia campaign. "

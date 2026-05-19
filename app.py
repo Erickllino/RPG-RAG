@@ -1,11 +1,11 @@
 import gradio as gr
 
-from src.ui.tab_vector_store import create_tab as tab_vector_store
-from src.ui.tab_session_audio import create_tab as tab_session_audio
-from src.ui.tab_lore_writer import create_tab as tab_lore_writer
-from src.ui.tab_session_chat import create_tab as tab_session_chat
-from src.ui.tab_npc import create_tab as tab_npc
-from src.ui.tab_quest import create_tab as tab_quest
+from agent.src.ui.tab_vector_store import create_tab as tab_vector_store
+from agent.src.ui.tab_session_audio import create_tab as tab_session_audio
+from agent.src.ui.tab_lore_writer import create_tab as tab_lore_writer
+from agent.src.ui.tab_session_chat import create_tab as tab_session_chat
+from agent.src.ui.tab_npc import create_tab as tab_npc
+from agent.src.ui.tab_quest import create_tab as tab_quest
 
 CSS = """
 /* Hide the root-level tab navigation bar */
@@ -36,11 +36,14 @@ CSS = """
 }
 """
 
-theme = gr.themes.Soft(
+theme = gr.themes.Origin(
     primary_hue="amber",
     secondary_hue="orange",
     neutral_hue="stone",
 )
+
+my_theme = gr.Theme.from_hub("hmb/spark")
+
 
 import argparse
 
@@ -99,4 +102,4 @@ if __name__ == "__main__":
 
     if parser.parse_args().local:
         print("TEST")
-    demo.launch(theme=theme, css=CSS)
+    demo.launch(theme=my_theme, css=CSS)
