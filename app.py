@@ -36,13 +36,17 @@ CSS = """
 }
 """
 
-theme = gr.themes.Origin(
-    primary_hue="amber",
-    secondary_hue="orange",
-    neutral_hue="stone",
-)
+# theme = gr.themes.Origin(
+#     primary_hue="amber",
+#     secondary_hue="orange",
+#     neutral_hue="stone",
+# )
 
-my_theme = gr.Theme.from_hub("hmb/spark")
+theme = gr.Theme.from_hub("hmb/spark").set(
+    button_primary_background_fill="#FFFFFF",
+    button_primary_background_fill_hover="#FFFFFF",
+
+)
 
 
 import argparse
@@ -102,4 +106,4 @@ if __name__ == "__main__":
 
     if parser.parse_args().local:
         print("TEST")
-    demo.launch(theme=my_theme, css=CSS)
+    demo.launch(theme=theme, css=CSS)
